@@ -124,8 +124,10 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--raise)}
     <button data-v="players">اللاعبين</button>
     <button data-v="reports">البلاغات <span class="pill" id="pRep" hidden></span></button>
     <button data-v="flags">المشبوهين <span class="pill" id="pFlag" hidden></span></button>
+    <button data-v="support">الدعم الفني <span class="pill" id="pTk" hidden></span></button>
     <button data-v="mail">البريد</button>
     <button data-v="news">الإعلان والصيانة</button>
+    <button data-v="chat">فلتر الشات</button>
     <button data-v="store">المتجر والعروض</button>
     <button data-v="sales">المبيعات</button>
     <button data-v="cup">البطولة</button>
@@ -141,7 +143,7 @@ tr.click{cursor:pointer} tr.click:hover td{background:var(--raise)}
 const PID = "85c8e361-1231-460b-918f-1d09fb5c20c3";
 const AUTH = "https://player-auth.services.api.unity.com/v1/authentication/";
 const CC = "https://cloud-code.services.api.unity.com/v1/projects/" + PID + "/scripts/dama";
-const ACT = { warn: "تحذير", mute: "كتم", unmute: "فك الكتم", ban: "حظر", unban: "فك الحظر", gift: "هدية بالبريد", adjust: "تعديل رصيد", mail: "بريد للكل", mail_del: "حذف بريد", cfg: "إعدادات", reports_done: "إغلاق بلاغات", flags_done: "إغلاق مشبوهين" };
+const ACT = { ticket_reply: "رد الدعم", warn: "تحذير", mute: "كتم", unmute: "فك الكتم", ban: "حظر", unban: "فك الحظر", gift: "هدية بالبريد", adjust: "تعديل رصيد", mail: "بريد للكل", mail_del: "حذف بريد", cfg: "إعدادات", reports_done: "إغلاق بلاغات", flags_done: "إغلاق مشبوهين" };
 const WHERE = { world: "شات الساحة", match_voice: "صوت المباراة", avatar: "صورة اللاعب", lobby: "شات اللوبي" };
 const PRICE_NAMES = { Stones_Crystal: "أحجار كرستال الياقوت", Stones_Azure: "أحجار كرستال السماء", Table_DesertSadu: "طاولة سدو الصحراء", Table_Pearl: "طاولة اللؤلؤ", namecard: "بطاقة تغيير الاسم", gold: "باقة الموسم الذهبية", room0: "بطاقة روم (مرة)", room1: "بطاقة روم يوم", room2: "بطاقة روم ٣ أيام", room3: "بطاقة روم ٧ أيام" };
 const PIDS = { dama_gems_30: "30 جوهرة", dama_gems_60: "60 جوهرة", dama_gems_325: "325 جوهرة", dama_gems_660: "660 جوهرة", dama_gems_1800: "1800 جوهرة", dama_gems_3850: "3850 جوهرة", dama_gems_8100: "8100 جوهرة", dama_card_week: "بطاقة الديوانية الأسبوعية", dama_card_month: "بطاقة الديوانية الشهرية", dama_founders: "باقة المؤسسين", dama_hero_turkish: "شخصية أُسطى القهوة" };
@@ -213,7 +215,7 @@ async function enter() {
   $("#login").hidden = true; $("#app").hidden = false; $("#whoId").textContent = me;
   pills(); go(location.hash.replace("#", "") || "home");
 }
-function pills() { const r = $("#pRep"), f = $("#pFlag"); r.hidden = !OV.open; r.textContent = OV.open; f.hidden = !OV.flags; f.textContent = OV.flags; }
+function pills() { const r = $("#pRep"), f = $("#pFlag"), k = $("#pTk"); r.hidden = !OV.open; r.textContent = OV.open; f.hidden = !OV.flags; f.textContent = OV.flags; k.hidden = !OV.tickets; k.textContent = OV.tickets; }
 
 // ------------------------------------------------------------ views
 const V = {};
@@ -254,10 +256,10 @@ V.home = async (m) => {
   if (OV.cfg.cupOff) flags.push('<span class="tag bad">بطولة الأسبوع ملغية</span>');
   m.innerHTML = head("نظرة عامة", "أرقام اليوم بتوقيت الكويت · آخر تحديث " + kw(OV.now)) +
     (flags.length ? '<div class="row" style="margin-bottom:14px">' + flags.join("") + "</div>" : "") +
-    '<div class="kpis">' +
+    '<div class="kpis">' + kpi("أونلاين الحين", OV.online ? fmt(OV.online.total) : "-", OV.online ? "ساحة " + OV.online.world + " · مباريات " + OV.online.match + " · لوبي " + OV.online.lobby : "") +
     kpi("لاعبين اليوم", fmt(t.dau), "أمس " + fmt(y.dau)) + kpi("لاعبين جدد", fmt(t.nu), "٧ أيام " + fmt(sum("nu", 7))) +
     kpi("مباريات اليوم", fmt(t.m), "أونلاين " + fmt(t.mo)) + kpi("دخل اليوم", usd(t.usd), "٣٠ يوم " + usd(sum("usd", 30))) +
-    kpi("كل اللاعبين", fmt(OV.players), "بالتصنيف") + kpi("بلاغات مفتوحة", fmt(OV.open), "مشبوهين " + fmt(OV.flags)) + "</div>" +
+    kpi("كل اللاعبين", fmt(OV.players), "بالفهرس") + kpi("بلاغات مفتوحة", fmt(OV.open), "مشبوهين " + fmt(OV.flags) + " · دعم " + fmt(OV.tickets)) + "</div>" +
     '<div class="grid2"><div><h3>اللاعبين يومياً</h3><div class="panel chart">' + bars(d, "dau", "var(--gold)") + '</div></div><div><h3>الدخل يومياً (App Store)</h3><div class="panel chart">' + bars(d, "usd", "var(--good)", true) + "</div></div></div>" +
     '<div class="grid2"><div><h3>المباريات يومياً</h3><div class="panel chart">' + bars(d, "m", "var(--sadu)") + "</div></div><div><h3>الرجوع (Retention)</h3>" +
     tbl(["اليوم", "جدد", "رجعوا بعد يوم", "بعد ٧", "بعد ٣٠"], ret, "تطلع الأرقام بعد ما يرجع اللاعبين الجدد") + "</div></div>" +
@@ -339,6 +341,41 @@ async function listView(m, what) {
 }
 V.reports = (m) => listView(m, "reports");
 V.flags = (m) => listView(m, "flags");
+
+// ---- support inbox
+V.support = async (m) => {
+  let all = false;
+  const draw = async () => {
+    const r = await call("adm_list", { what: "tickets" }), l = r.list.filter(x => all || !x.done);
+    m.innerHTML = head("الدعم الفني", "رسائل اللاعبين من الإعدادات داخل اللعبة. ردّك يوصلهم في صندوق البريد، وتقدر تحط معه جواهر تعويض") +
+      '<div class="row" style="margin-bottom:12px"><button class="btn sm" id="tg">' + (all ? "المفتوحة بس" : "اعرض الكل") + "</button></div>" +
+      (l.length ? l.map(x => '<div class="panel" style="margin-bottom:12px' + (x.done ? ';opacity:.6' : '') + '"><div class="row" style="justify-content:space-between"><b><a href="#" data-p="' + esc(x.id) + '">' + esc(x.n || "لاعب") + '</a></b><span class="num id">' + kw(x.t) + (x.ver ? " · v" + esc(x.ver) : "") + '</span></div><p style="white-space:pre-wrap;margin:8px 0">' + esc(x.text) + "</p>" +
+        (x.done ? '<p class="sub" style="margin:0">ردّك (' + kw(x.rt) + "): " + esc(x.reply) + "</p>"
+          : '<textarea data-r="' + x.i + '" placeholder="اكتب الرد…" style="min-height:70px"></textarea><div class="row" style="margin-top:8px"><input type="number" min="0" placeholder="جواهر تعويض (اختياري)" data-g="' + x.i + '" style="width:200px"><button class="btn gold sm" data-s="' + x.i + '">أرسل الرد</button></div>') + "</div>").join("")
+        : '<div class="panel empty">' + (all ? "ما فيه رسائل" : "ما فيه رسائل مفتوحة، كل شي تمام") + "</div>");
+    m.querySelectorAll("a[data-p]").forEach(a => a.addEventListener("click", (e) => { e.preventDefault(); go("players", a.dataset.p); }));
+    $("#tg").onclick = () => { all = !all; draw(); };
+    m.querySelectorAll("[data-s]").forEach(b => b.onclick = async () => {
+      const i = Number(b.dataset.s), text = m.querySelector('[data-r="' + i + '"]').value.trim(), gems = Number(m.querySelector('[data-g="' + i + '"]').value || 0);
+      if (!text) return toast("اكتب الرد", true);
+      try { await call("adm_ticket_reply", { i, text, gems }); toast("انرسل الرد لبريده"); OV = await call("adm_overview"); pills(); draw(); } catch (err) { toast(err.message, true); }
+    });
+  };
+  await draw();
+};
+
+// ---- chat filter
+V.chat = async (m) => {
+  OV = await call("adm_overview"); const w = OV.cfg.words || [], mu = (OV.cfg.auto && OV.cfg.auto.muteAt) || 5;
+  m.innerHTML = head("فلتر الشات", "الكلمات الممنوعة تتحول نجوم *** في شات الساحة، وتوصل للجوالات خلال دقيقة") +
+    '<div class="grid2"><div class="panel"><div class="field"><label for="ww">الكلمات الممنوعة (كل كلمة بسطر) · ' + w.length + ' كلمة</label><textarea id="ww" style="min-height:260px">' + esc(w.join("\n")) + '</textarea></div><button class="btn gold" id="wsv">احفظ الكلمات</button>' +
+    '<p class="sub" style="margin:8px 0 0">يتجاهل التشكيل والتطويل والمسافات بين الحروف، وأ إ آ = ا، ة = ه، ى = ي.</p></div>' +
+    '<div class="panel"><h3 style="margin-top:0">الكتم التلقائي</h3><p>اللي يحاول يكتب كلمة ممنوعة ٣ مرات باليوم، أو يبلّغ عليه عدد معين من اللاعبين، ينكتم تلقائياً، والمدة تزيد كل مرة:</p>' +
+    '<div class="row" style="margin-bottom:14px"><span class="tag">أول مرة: يوم</span><span class="tag">الثانية: ٣ أيام</span><span class="tag warn">الثالثة: ٧ أيام</span><span class="tag bad">بعدها: ٣٠ يوم</span></div>' +
+    '<div class="field"><label for="ma">عدد المبلّغين خلال يوم عشان ينكتم</label><input id="ma" type="number" min="2" max="50" value="' + mu + '" style="width:120px"></div><button class="btn" id="msv">احفظ</button></div></div>';
+  $("#wsv").onclick = async () => { try { const r = await call("adm_cfg", { words: $("#ww").value.split(/\n+/).map(x => x.trim()).filter(Boolean) }); toast("انحفظت " + r.cfg.words.length + " كلمة"); go("chat"); } catch (e) { toast(e.message, true); } };
+  $("#msv").onclick = async () => { await call("adm_cfg", { auto: { muteAt: +$("#ma").value } }); toast("انحفظ"); };
+};
 
 // ---- mail
 V.mail = async (m) => {
