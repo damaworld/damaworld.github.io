@@ -369,7 +369,7 @@ V.chat = async (m) => {
   OV = await call("adm_overview"); const w = OV.cfg.words || [], mu = (OV.cfg.auto && OV.cfg.auto.muteAt) || 5;
   m.innerHTML = head("فلتر الشات", "الكلمات الممنوعة تتحول نجوم *** في شات الساحة، وتوصل للجوالات خلال دقيقة") +
     '<div class="grid2"><div class="panel"><div class="field"><label for="ww">الكلمات الممنوعة (كل كلمة بسطر) · ' + w.length + ' كلمة</label><textarea id="ww" style="min-height:260px">' + esc(w.join("\n")) + '</textarea></div><button class="btn gold" id="wsv">احفظ الكلمات</button>' +
-    '<p class="sub" style="margin:8px 0 0">يتجاهل التشكيل والتطويل والمسافات بين الحروف، وأ إ آ = ا، ة = ه، ى = ي.</p></div>' +
+    '<p class="sub" style="margin:8px 0 0">يمسك الكلمة في بداية الكلمة وبعد و / ال / يا (مثلاً "زق" ما تمسك "رزق")، ويتجاهل التشكيل والتطويل، وأ إ آ = ا، ة = ه، ى = ي.</p></div>' +
     '<div class="panel"><h3 style="margin-top:0">الكتم التلقائي</h3><p>اللي يحاول يكتب كلمة ممنوعة ٣ مرات باليوم، أو يبلّغ عليه عدد معين من اللاعبين، ينكتم تلقائياً، والمدة تزيد كل مرة:</p>' +
     '<div class="row" style="margin-bottom:14px"><span class="tag">أول مرة: يوم</span><span class="tag">الثانية: ٣ أيام</span><span class="tag warn">الثالثة: ٧ أيام</span><span class="tag bad">بعدها: ٣٠ يوم</span></div>' +
     '<div class="field"><label for="ma">عدد المبلّغين خلال يوم عشان ينكتم</label><input id="ma" type="number" min="2" max="50" value="' + mu + '" style="width:120px"></div><button class="btn" id="msv">احفظ</button></div></div>';
