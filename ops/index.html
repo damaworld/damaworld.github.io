@@ -210,6 +210,15 @@ h3 small{font-weight:400;margin-inline-start:6px}
 /* emergency stop */
 .estop{display:flex;gap:16px;align-items:center;flex-wrap:wrap;border-color:rgba(232,102,79,.45);background:linear-gradient(160deg,rgba(232,102,79,.10),var(--pane) 60%)}
 .estop>div:first-child{flex:1;min-width:220px}
+/* switches */
+.swgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+.sw{display:flex;gap:14px;align-items:center}
+.sw>svg{width:26px;height:26px;flex:none;color:var(--gold)}
+.sw.off>svg{color:var(--mute)} .sw.off{border-color:rgba(232,102,79,.45)}
+.swt{flex:1;min-width:0} .swt b{display:block} .swt p{margin:2px 0 0;font-size:13px;color:var(--dim)}
+.tog{flex:none;width:52px;height:30px;border-radius:999px;border:1px solid var(--line2);background:var(--raise);position:relative;cursor:pointer;padding:0}
+.tog i{position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;background:var(--mute);transition:right .18s,background .18s}
+.tog.on{background:rgba(116,192,138,.25);border-color:var(--good)} .tog.on i{right:25px;background:var(--good)}
 </style>
 </head>
 <body>
@@ -242,6 +251,7 @@ h3 small{font-weight:400;margin-inline-start:6px}
     <button data-v="mail"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span class="t">البريد</span></button>
     <div class="grp">التشغيل</div>
     <button data-v="news"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1zM16 8a5 5 0 0 1 0 8"/></svg><span class="t">التشغيل والصيانة</span></button>
+    <button data-v="switches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="20" height="10" rx="5"/><circle cx="16" cy="12" r="3"/></svg><span class="t">المفاتيح</span></button>
     <button data-v="events"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M8 15h3"/></svg><span class="t">الفعاليات</span></button>
     <button data-v="store"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9 5 3h14l2 6M3 9h18v11H3zM9 13h6"/></svg><span class="t">المتجر والعروض</span></button>
     <button data-v="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v12H8l-4 4z"/><path d="M8 9h8M8 12h5"/></svg><span class="t">فلتر الشات</span></button>
@@ -1016,6 +1026,33 @@ V.news = async (m) => {
   };
 };
 function verCmp(a, b) { const x = String(a).split(".").map(Number), y = String(b).split(".").map(Number); for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d; } return 0; }
+
+// ------------------------------------------------------------ switches: turn a feature off for everyone, without an update (from 0.4.0)
+const SW = [
+  ["voice", "المايك والصوت", "صوت الساحة وصوت المباريات. إذا انطفى: المايك يتسكّر عند الكل وأزرار الصوت تختفي", "M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v4"],
+  ["chat", "الدردشة الكتابية", "دردشة الساحة واللوبي. إذا انطفت: الشريط يختفي وما أحد يقدر يكتب", "M4 4h16v12H8l-4 4z"],
+  ["photos", "رفع الصور", "صور الملف الشخصي من الجوال. إذا انطفى: اللاعب يختار من صور اللعبة بس", "M3 5h18v14H3zM8 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM21 16l-5-5-9 8"],
+  ["friends", "طلبات الصداقة", "إرسال طلبات جديدة. الأصدقاء الحاليين يبقون", "M9 8a4 4 0 1 0 0-.01M2 21a7 7 0 0 1 14 0M19 8v6M16 11h6"],
+  ["store", "الشراء بالفلوس", "يقفل زر الشراء في خزنة الجواهر (المشتريات اللي تمت تكمل عادي)", "M3 9 5 3h14l2 6M3 9h18v11H3z"],
+  ["cup", "بطولة الجمعة", "التسجيل في البطولة", "M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"],
+  ["rate", "نافذة تقييم اللعبة", "نافذة أبل للتقييم بعد الفوز", "M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"],
+];
+V.switches = async (m) => {
+  await overview();
+  const ff = Object.assign({}, OV.cfg.ff || {}), rate = OV.cfg.rate || { on: true, days: 3 };
+  const off = SW.filter(s => ff[s[0]] === false).length;
+  m.innerHTML = head("المفاتيح", "شغّل أو طفّي أي ميزة عند كل اللاعبين خلال دقيقة، بدون تحديث. مفيدة لو صار خلل أو إزعاج في ميزة معيّنة (تشتغل من نسخة 0.4.0)") +
+    '<div class="kpis" style="margin-bottom:14px">' + kpi("شغالة", String(SW.length - off), "من " + SW.length + " ميزات") + kpi("مطفية", String(off), off ? SW.filter(s => ff[s[0]] === false).map(s => s[1]).join("، ") : "كل شي شغال", { hero: off > 0 }) + "</div>" +
+    '<div class="swgrid">' + SW.map(s => { const on = ff[s[0]] !== false; return '<div class="panel sw' + (on ? "" : " off") + '"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + s[3] + '"/></svg><div class="swt"><b>' + esc(s[1]) + "</b><p>" + esc(s[2]) + '</p></div><button class="tog' + (on ? " on" : "") + '" data-s="' + s[0] + '" role="switch" aria-checked="' + on + '" aria-label="' + esc(s[1]) + '"><i></i></button></div>'; }).join("") + "</div>" +
+    '<h3>نافذة التقييم</h3><div class="panel"><p class="sub" style="margin:0 0 12px">تطلع نافذة أبل الرسمية (نجوم) بعد ما يفوز اللاعب، إذا لعب عدد أيام معيّن وفاز مرتين على الأقل. أبل تحددها ٣ مرات بالسنة، واحنا مرة كل ٤ شهور. ممنوع نعطي جوائز مقابل التقييم.</p>' +
+    '<div class="row"><div class="field" style="width:220px;margin:0"><label for="rd">بعد كم يوم لعب</label><input id="rd" type="number" min="1" max="60" value="' + (rate.days || 3) + '"></div><button class="btn gold" id="rsv" style="align-self:flex-end">احفظ</button></div></div><div id="scf"></div>';
+  m.querySelectorAll(".tog").forEach(b => b.onclick = () => {
+    const k = b.dataset.s, on = !b.classList.contains("on"), name = SW.find(s => s[0] === k)[1];
+    const apply = async () => { const next = Object.assign({}, ff); if (on) delete next[k]; else next[k] = false; await call("adm_cfg", { ff: next }); toast((on ? "اشتغلت: " : "انطفت: ") + name); go("switches"); };
+    if (on) apply().catch(e => toast(e.message, true)); else confirmBox($("#scf"), "تطفي «" + name + "» عند كل اللاعبين؟", "نعم، طفّها", apply);
+  });
+  $("#rsv").onclick = async () => { await call("adm_cfg", { rate: { on: ff.rate !== false, days: +$("#rd").value || 3 } }); toast("انحفظ"); };
+};
 
 // back with a live session
 (async () => { if (load("st")) { $("#lmsg").textContent = "جاري الدخول…"; try { await refresh(); await enter(); } catch (e) { $("#lmsg").textContent = ""; store("st", null); } } })();
