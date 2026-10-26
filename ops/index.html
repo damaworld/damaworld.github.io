@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>ديوان الإدارة · DamaWorld</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a night majlis console - right-hand rail of sections (RTL), one working pane; on phones the rail becomes a scrolling strip. */
+:root{
+  --ink:#f3ead8; --dim:#a99b82; --mute:#6f6453;
+  --bg:#110d09; --pane:#1a140e; --raise:#231b13; --line:#3a2e20;
+  --gold:#d6ad55; --gold-ink:#2a1c08; --sadu:#9c3b2a;
+  --good:#6fb27a; --warn:#e0a948; --bad:#e0644f;
+  --f-ui:"Tajawal", "Segoe UI", Tahoma, sans-serif; --f-num:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-ui)}
+body{min-height:100vh}
+button,input,select,textarea{font:inherit;color:inherit}
+.num,.id{font-family:var(--f-num);font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.id{font-size:12px;color:var(--dim)}
+a{color:var(--gold)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* sadu band: the one ornament */
+.band{height:6px;background:repeating-linear-gradient(90deg,var(--sadu) 0 10px,var(--gold) 10px 14px,var(--bg) 14px 18px,var(--gold) 18px 22px)}
+
+/* login */
+#login{max-width:420px;margin:12vh auto 0;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
+#login h1{font-size:30px;font-weight:800;margin:0 0 4px;color:var(--gold)}
+#login p{color:var(--dim);margin:0 0 22px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-size:13px;color:var(--dim)}
+input,select,textarea{background:var(--raise);border:1px solid var(--line);border-radius:6px;padding:9px 11px;width:100%}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);outline:none}
+.btn{background:var(--raise);border:1px solid var(--line);border-radius:6px;padding:8px 14px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--gold)}
+.btn.gold{background:var(--gold);color:var(--gold-ink);border-color:var(--gold);font-weight:700}
+.btn.bad{border-color:var(--bad);color:var(--bad)}
+.btn.bad.solid{background:var(--bad);color:#1a0904}
+.btn.sm{padding:4px 10px;font-size:13px}
+.btn[disabled]{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.msg{margin-top:12px;font-size:14px;min-height:20px}
+.msg.err{color:var(--bad)} .msg.ok{color:var(--good)}
+
+/* app */
+#app{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+nav{background:var(--pane);border-inline-start:1px solid var(--line);padding:18px 0;position:sticky;top:0;height:100vh;overflow:auto}
+nav .brand{padding:0 20px 16px;font-weight:800;font-size:19px;color:var(--gold)}
+nav .brand small{display:block;color:var(--dim);font-weight:400;font-size:12px}
+nav button{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:0;padding:10px 20px;text-align:right;cursor:pointer;color:var(--dim)}
+nav button:hover{color:var(--ink)}
+nav button.on{color:var(--ink);background:var(--raise);box-shadow:inset -3px 0 0 var(--gold)}
+.pill{font-family:var(--f-num);font-size:11px;padding:1px 7px;border-radius:9px;background:var(--bad);color:#1a0904}
+nav .who{padding:16px 20px 0;word-break:break-all;margin-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--mute)}
+main{padding-block:22px 60px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px));min-width:0}
+h2{font-size:24px;margin:0 0 4px;font-weight:800;text-wrap:balance}
+.sub{color:var(--dim);margin:0 0 20px;font-size:14px}
+h3{font-size:16px;margin:26px 0 10px;color:var(--gold);font-weight:700}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--pane);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.kpi b{display:block;font:500 26px/1.2 var(--f-num);direction:ltr;text-align:right}
+.kpi span{font-size:13px;color:var(--dim)}
+.kpi em{font-style:normal;font-size:12px;color:var(--mute)}
+.panel{background:var(--pane);border:1px solid var(--line);border-radius:8px;padding:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid2>*{min-width:0}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-weight:500;color:var(--dim);font-size:12px;text-align:right;padding:8px 10px;border-bottom:1px solid var(--line);background:var(--pane);white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tr.done td{opacity:.45}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--raise)}
+.tag{display:inline-block;font-size:12px;padding:1px 8px;border-radius:4px;border:1px solid var(--line);color:var(--dim);white-space:nowrap}
+.tag.bad{border-color:var(--bad);color:var(--bad)} .tag.warn{border-color:var(--warn);color:var(--warn)} .tag.good{border-color:var(--good);color:var(--good)} .tag.gold{border-color:var(--gold);color:var(--gold)}
+.chart svg{width:100%;height:150px;display:block}
+.empty{color:var(--mute);padding:18px;text-align:center}
+.pcard{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.pcard img{width:72px;height:72px;border-radius:8px;object-fit:cover;border:1px solid var(--line)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;flex:1;min-width:0}
+.stats div{background:var(--raise);border-radius:6px;padding:6px 10px}
+.stats small{display:block;color:var(--dim);font-size:12px}
+.confirm{margin-top:10px;padding:10px;border:1px solid var(--bad);border-radius:6px;background:rgba(224,100,79,.08)}
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--raise);border:1px solid var(--gold);padding:10px 18px;border-radius:8px;z-index:9;max-width:90vw}
+.toast.err{border-color:var(--bad)}
+.loading{color:var(--dim);padding:20px}
+@media (max-width:820px){
+  #app{grid-template-columns:1fr}
+  nav{position:sticky;top:0;height:auto;display:flex;overflow-x:auto;padding:0;z-index:5;border:0;border-bottom:1px solid var(--line)}
+  nav .brand,nav .who{display:none}
+  nav button{width:auto;white-space:nowrap;padding:12px 14px;gap:6px}
+  nav button.on{box-shadow:inset 0 -3px 0 var(--gold)}
+  main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .grid2{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:no-preference){.btn,nav button{transition:color .15s,border-color .15s,background .15s}}
+</style>
+</head>
+<body>
+<div class="band"></div>
+
+<section id="login">
+  <h1>ديوان الإدارة</h1>
+  <p>لوحة تحكم DamaWorld. الدخول لحسابات الإدارة فقط.</p>
+  <form id="lf" autocomplete="on">
+    <div class="field"><label for="u">اسم المستخدم</label><input id="u" name="username" autocomplete="username" dir="ltr" required minlength="3"></div>
+    <div class="field"><label for="pw">كلمة السر</label><input id="pw" name="password" type="password" autocomplete="current-password" dir="ltr" required minlength="8"></div>
+    <div class="row"><button class="btn gold" id="bin" type="submit">دخول</button><button class="btn" id="bup" type="button">سوّ حساب إدارة جديد</button></div>
+    <div class="msg" id="lmsg"></div>
+  </form>
+</section>
+
+<div id="app" hidden>
+  <nav id="nav">
+    <div class="brand">ديوان الإدارة<small>DamaWorld</small></div>
+    <button data-v="home">نظرة عامة</button>
+    <button data-v="players">اللاعبين</button>
+    <button data-v="reports">البلاغات <span class="pill" id="pRep" hidden></span></button>
+    <button data-v="flags">المشبوهين <span class="pill" id="pFlag" hidden></span></button>
+    <button data-v="mail">البريد</button>
+    <button data-v="news">الإعلان والصيانة</button>
+    <button data-v="store">المتجر والعروض</button>
+    <button data-v="sales">المبيعات</button>
+    <button data-v="cup">البطولة</button>
+    <button data-v="perf">أداء الأجهزة</button>
+    <button data-v="audit">السجل</button>
+    <div class="who"><div id="whoId" class="id"></div><button class="btn sm" id="out" style="margin-top:8px;padding:4px 10px;width:auto">خروج</button></div>
+  </nav>
+  <main id="main"></main>
+</div>
+
+<script>
+"use strict";
+const PID = "85c8e361-1231-460b-918f-1d09fb5c20c3";
+const AUTH = "https://player-auth.services.api.unity.com/v1/authentication/";
+const CC = "https://cloud-code.services.api.unity.com/v1/projects/" + PID + "/scripts/dama";
+const ACT = { warn: "تحذير", mute: "كتم", unmute: "فك الكتم", ban: "حظر", unban: "فك الحظر", gift: "هدية بالبريد", adjust: "تعديل رصيد", mail: "بريد للكل", mail_del: "حذف بريد", cfg: "إعدادات", reports_done: "إغلاق بلاغات", flags_done: "إغلاق مشبوهين" };
+const WHERE = { world: "شات الساحة", match_voice: "صوت المباراة", avatar: "صورة اللاعب", lobby: "شات اللوبي" };
+const PRICE_NAMES = { Stones_Crystal: "أحجار كرستال الياقوت", Stones_Azure: "أحجار كرستال السماء", Table_DesertSadu: "طاولة سدو الصحراء", Table_Pearl: "طاولة اللؤلؤ", namecard: "بطاقة تغيير الاسم", gold: "باقة الموسم الذهبية", room0: "بطاقة روم (مرة)", room1: "بطاقة روم يوم", room2: "بطاقة روم ٣ أيام", room3: "بطاقة روم ٧ أيام" };
+const PIDS = { dama_gems_30: "30 جوهرة", dama_gems_60: "60 جوهرة", dama_gems_325: "325 جوهرة", dama_gems_660: "660 جوهرة", dama_gems_1800: "1800 جوهرة", dama_gems_3850: "3850 جوهرة", dama_gems_8100: "8100 جوهرة", dama_card_week: "بطاقة الديوانية الأسبوعية", dama_card_month: "بطاقة الديوانية الشهرية", dama_founders: "باقة المؤسسين", dama_hero_turkish: "شخصية أُسطى القهوة" };
+
+let tok = "", exp = 0, me = "", OV = null;
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = (n) => Number(n || 0).toLocaleString("en-US");
+const usd = (n) => "$" + Number(n || 0).toFixed(2);
+const kw = (t) => { if (!t) return "-"; const d = new Date(Number(t) + 3 * 3600000); const p = (x) => String(x).padStart(2, "0"); return p(d.getUTCDate()) + "/" + p(d.getUTCMonth() + 1) + " " + p(d.getUTCHours()) + ":" + p(d.getUTCMinutes()); };
+const dayLbl = (d) => { const s = String(d); return s.slice(6, 8) + "/" + s.slice(4, 6); };
+function store(k, v) { try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch (e) {} }
+function load(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }
+function toast(t, bad) { const d = document.createElement("div"); d.className = "toast" + (bad ? " err" : ""); d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 3200); }
+
+// ------------------------------------------------------------ sign in (Unity's own accounts; the password never leaves this page except to Unity)
+async function auth(path, body) {
+  const r = await fetch(AUTH + path, { method: "POST", headers: { "Content-Type": "application/json", "ProjectId": PID }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(authErr(j, r.status));
+  tok = j.idToken; exp = Date.now() + (Number(j.expiresIn || 3600) - 60) * 1000; me = j.userId || (j.user && j.user.id) || "";
+  store("st", j.sessionToken || null); store("me", me);
+  return j;
+}
+function authErr(j, st) {
+  const d = (j.detail || j.title || "").toLowerCase();
+  if (d.includes("invalid username or password") || st === 401) return "اسم المستخدم أو كلمة السر غلط";
+  if (d.includes("exists")) return "اسم المستخدم مأخوذ";
+  if (d.includes("password")) return "كلمة السر لازم ٨ حروف على الأقل وفيها حرف كبير وصغير ورقم ورمز";
+  if (d.includes("username")) return "اسم المستخدم من ٣ لين ٢٠ حرف إنجليزي أو أرقام أو . - @ _";
+  if (d.includes("not enabled") || d.includes("disabled")) return "تسجيل الدخول باسم وكلمة سر مو مفعّل بإعدادات Unity";
+  return (j.detail || j.title || "تعذر الدخول") + " (" + st + ")";
+}
+async function refresh() {
+  const st = load("st"); if (!st) throw new Error("انتهت الجلسة، ادخل من جديد");
+  await auth("session-token", { sessionToken: st });
+}
+async function call(action, args) {
+  if (!tok || Date.now() > exp) await refresh();
+  const r = await fetch(CC, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + tok }, body: JSON.stringify({ params: { action, args: args || {} } }) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error((j.detail || j.title || "خطأ") + " (" + r.status + ")");
+  let o = j.output; if (typeof o === "string") { try { o = JSON.parse(o); } catch (e) {} }
+  if (!o || !o.ok) throw new Error(o && o.err === "not allowed" ? "هذا الحساب مو حساب إدارة" : (o && o.err) || "رد غير متوقع");
+  return o;
+}
+
+$("#lf").addEventListener("submit", async (e) => {
+  e.preventDefault(); const m = $("#lmsg"); m.className = "msg"; m.textContent = "جاري الدخول…";
+  try { await auth("usernamepassword/sign-in", { username: $("#u").value.trim(), password: $("#pw").value }); $("#pw").value = ""; await enter(); }
+  catch (err) { m.className = "msg err"; m.textContent = err.message; }
+});
+$("#bup").addEventListener("click", async () => {
+  const m = $("#lmsg"); if (!$("#lf").reportValidity()) return; m.className = "msg"; m.textContent = "جاري إنشاء الحساب…";
+  try { await auth("usernamepassword/sign-up", { username: $("#u").value.trim(), password: $("#pw").value }); $("#pw").value = ""; await enter(); }
+  catch (err) { m.className = "msg err"; m.textContent = err.message; }
+});
+$("#out").addEventListener("click", () => { tok = ""; store("st", null); store("me", null); location.reload(); });
+
+async function enter() {
+  const m = $("#lmsg");
+  try { OV = await call("adm_overview"); }
+  catch (err) {
+    m.className = "msg err";
+    m.innerHTML = esc(err.message) + (err.message.includes("مو حساب إدارة") ? '<br>رقم حسابك: <span class="num">' + esc(me) + '</span><br>أرسل هذا الرقم لـ Claude عشان يضيفه للإدارة.' : "");
+    return;
+  }
+  $("#login").hidden = true; $("#app").hidden = false; $("#whoId").textContent = me;
+  pills(); go(location.hash.replace("#", "") || "home");
+}
+function pills() { const r = $("#pRep"), f = $("#pFlag"); r.hidden = !OV.open; r.textContent = OV.open; f.hidden = !OV.flags; f.textContent = OV.flags; }
+
+// ------------------------------------------------------------ views
+const V = {};
+let cur = "";
+document.querySelectorAll("nav button[data-v]").forEach(b => b.addEventListener("click", () => go(b.dataset.v)));
+async function go(v, arg) {
+  if (!V[v]) v = "home"; cur = v;
+  document.querySelectorAll("nav button[data-v]").forEach(b => b.classList.toggle("on", b.dataset.v === v));
+  try { history.replaceState(null, "", "#" + v); } catch (e) {}
+  const m = $("#main"); m.innerHTML = '<div class="loading">جاري التحميل…</div>';
+  try { await V[v](m, arg); } catch (err) { m.innerHTML = '<div class="msg err">' + esc(err.message) + "</div>"; }
+}
+const head = (t, s) => "<h2>" + esc(t) + "</h2>" + (s ? '<p class="sub">' + esc(s) + "</p>" : "");
+const tbl = (cols, rows, empty) => rows.length ? '<div class="tw"><table><thead><tr>' + cols.map(c => "<th>" + c + "</th>").join("") + "</tr></thead><tbody>" + rows.join("") + "</tbody></table></div>" : '<div class="panel empty">' + (empty || "ما فيه شي") + "</div>";
+
+function bars(days, key, color, money) {
+  const W = 600, H = 150, pad = 22, vals = days.map(d => Number(d[key] || 0)), max = Math.max(1, ...vals), bw = (W - pad) / days.length;
+  let s = '<svg viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" role="img">';
+  [0.5, 1].forEach(f => { const y = H - pad - (H - pad - 10) * f; s += '<line x1="0" x2="' + W + '" y1="' + y + '" y2="' + y + '" stroke="var(--line)" stroke-dasharray="3 4"/><text x="' + (W - 2) + '" y="' + (y - 3) + '" fill="var(--mute)" font-size="10" text-anchor="end" font-family="IBM Plex Mono" direction="ltr">' + (money ? "$" : "") + (Math.round(max * f * 100) / 100) + "</text>"; });
+  vals.forEach((v, i) => {
+    const h = (H - pad - 10) * v / max, x = W - pad - (i + 1) * bw + 2;            // newest on the left (RTL reading ends there)
+    s += '<rect x="' + x + '" y="' + (H - pad - h) + '" width="' + Math.max(2, bw - 4) + '" height="' + h + '" fill="' + color + '" opacity="' + (i === vals.length - 1 ? 1 : .55) + '"><title>' + dayLbl(days[i].day) + ": " + v + "</title></rect>";
+    if (i % 5 === 4 || i === vals.length - 1) s += '<text x="' + (x + bw / 2) + '" y="' + (H - 6) + '" fill="var(--dim)" font-size="10" text-anchor="middle" font-family="IBM Plex Mono" direction="ltr">' + dayLbl(days[i].day) + "</text>";
+  });
+  return s + "</svg>";
+}
+
+V.home = async (m) => {
+  OV = await call("adm_overview"); pills();
+  const d = OV.days, t = d[d.length - 1], y = d[d.length - 2] || {};
+  const sum = (k, n) => d.slice(-n).reduce((a, x) => a + Number(x[k] || 0), 0);
+  const ret = d.slice(-15, -1).filter(x => x.nu).reverse().map(x => "<tr><td class='num'>" + dayLbl(x.day) + "</td><td class='num'>" + fmt(x.nu) + "</td><td class='num'>" + (x.r1 ? Math.round(100 * x.r1 / x.nu) + "%" : "-") + "</td><td class='num'>" + (x.r7 ? Math.round(100 * x.r7 / x.nu) + "%" : "-") + "</td><td class='num'>" + (x.r30 ? Math.round(100 * x.r30 / x.nu) + "%" : "-") + "</td></tr>");
+  const flags = [];
+  if (OV.cfg.maint && OV.cfg.maint.on) flags.push('<span class="tag bad">الصيانة شغالة</span>');
+  if (OV.cfg.minVer) flags.push('<span class="tag warn">أقل نسخة ' + esc(OV.cfg.minVer) + "</span>");
+  if (OV.cfg.sale && OV.cfg.sale.until > OV.now) flags.push('<span class="tag gold">خصم ' + OV.cfg.sale.pct + "% لين " + kw(OV.cfg.sale.until) + "</span>");
+  if (OV.cfg.news && OV.cfg.news.text) flags.push('<span class="tag good">إعلان منشور</span>');
+  if (OV.cfg.cupOff) flags.push('<span class="tag bad">بطولة الأسبوع ملغية</span>');
+  m.innerHTML = head("نظرة عامة", "أرقام اليوم بتوقيت الكويت · آخر تحديث " + kw(OV.now)) +
+    (flags.length ? '<div class="row" style="margin-bottom:14px">' + flags.join("") + "</div>" : "") +
+    '<div class="kpis">' +
+    kpi("لاعبين اليوم", fmt(t.dau), "أمس " + fmt(y.dau)) + kpi("لاعبين جدد", fmt(t.nu), "٧ أيام " + fmt(sum("nu", 7))) +
+    kpi("مباريات اليوم", fmt(t.m), "أونلاين " + fmt(t.mo)) + kpi("دخل اليوم", usd(t.usd), "٣٠ يوم " + usd(sum("usd", 30))) +
+    kpi("كل اللاعبين", fmt(OV.players), "بالتصنيف") + kpi("بلاغات مفتوحة", fmt(OV.open), "مشبوهين " + fmt(OV.flags)) + "</div>" +
+    '<div class="grid2"><div><h3>اللاعبين يومياً</h3><div class="panel chart">' + bars(d, "dau", "var(--gold)") + '</div></div><div><h3>الدخل يومياً (App Store)</h3><div class="panel chart">' + bars(d, "usd", "var(--good)", true) + "</div></div></div>" +
+    '<div class="grid2"><div><h3>المباريات يومياً</h3><div class="panel chart">' + bars(d, "m", "var(--sadu)") + "</div></div><div><h3>الرجوع (Retention)</h3>" +
+    tbl(["اليوم", "جدد", "رجعوا بعد يوم", "بعد ٧", "بعد ٣٠"], ret, "تطلع الأرقام بعد ما يرجع اللاعبين الجدد") + "</div></div>" +
+    '<div class="grid2"><div><h3>أكثر اللاعبين شراءً</h3>' + tbl(["اللاعب", "حقيقي", "تجريبي", "عمليات"], OV.spenders.map(s => "<tr class='click' data-p='" + esc(s.id) + "'><td>" + esc(s.n) + "</td><td class='num'>" + usd(s.usd) + "</td><td class='num'>" + usd(s.test) + "</td><td class='num'>" + s.count + "</td></tr>"), "ما فيه مشتريات للحين") +
+    "</div><div><h3>آخر المبيعات</h3>" + salesTable(OV.sales.slice(0, 8)) + "</div></div>";
+  bindPlayers(m);
+};
+const kpi = (l, v, e) => '<div class="kpi"><span>' + esc(l) + "</span><b>" + v + "</b><em>" + esc(e) + "</em></div>";
+const salesTable = (l) => tbl(["الوقت", "اللاعب", "المنتج", "السعر", ""], l.map(x => "<tr class='click' data-p='" + esc(x.p) + "'><td class='num'>" + kw(x.t) + "</td><td>" + esc(x.n || "") + "</td><td>" + esc(PIDS[x.pid] || x.pid) + "</td><td class='num'>" + usd(x.usd) + "</td><td>" + (x.env === "Production" ? '<span class="tag good">حقيقي</span>' : '<span class="tag">تجريبي</span>') + "</td></tr>"), "ما فيه مبيعات للحين");
+function bindPlayers(root) { root.querySelectorAll("[data-p]").forEach(r => r.addEventListener("click", () => go("players", r.dataset.p))); }
+
+// ---- players
+V.players = async (m, id) => {
+  m.innerHTML = head("اللاعبين", "ابحث بالاسم أو رقم الحساب") +
+    '<form class="row" id="sf"><input id="q" placeholder="اسم اللاعب أو رقم حسابه" style="flex:1;min-width:200px"><button class="btn gold">بحث</button></form><div id="res" style="margin-top:14px"></div><div id="pv"></div>';
+  $("#sf").addEventListener("submit", async (e) => {
+    e.preventDefault(); const q = $("#q").value.trim(); if (!q) return; $("#res").innerHTML = '<div class="loading">…</div>'; $("#pv").innerHTML = "";
+    try {
+      const r = await call("adm_find", { q });
+      $("#res").innerHTML = tbl(["الاسم", "النقاط", "الترتيب", "رقم الحساب"], r.list.map(p => "<tr class='click' data-p='" + esc(p.id) + "'><td>" + esc(p.n) + "</td><td class='num'>" + fmt(p.p) + "</td><td class='num'>" + (p.r || "-") + "</td><td class='id'>" + esc(p.id) + "</td></tr>"), "ما لقينا أحد");
+      bindPlayers($("#res"));
+      if (r.list.length === 1) showPlayer(r.list[0].id);
+    } catch (err) { $("#res").innerHTML = '<div class="msg err">' + esc(err.message) + "</div>"; }
+  });
+  if (id) { $("#q").value = id; showPlayer(id); }
+};
+async function showPlayer(id) {
+  const box = $("#pv"); if (!box) return; box.innerHTML = '<div class="loading">جاري تحميل اللاعب…</div>';
+  const r = await call("adm_player", { id }), p = r.p, pen = p.pen || {}, now = Date.now();
+  const banned = pen.ban > now, muted = pen.mute > now;
+  const photo = r.av && r.av.p ? '<img alt="صورة اللاعب" src="data:image/jpeg;base64,' + esc(r.av.p) + '">' : "";
+  const st = (l, v) => "<div><small>" + l + "</small><span class='num'>" + v + "</span></div>";
+  box.innerHTML = '<h3 style="margin-top:22px">' + esc(p.name) + "</h3>" +
+    '<div class="row" style="margin-bottom:10px">' + (banned ? '<span class="tag bad">محظور ' + (pen.ban > 9e14 ? "دائم" : "لين " + kw(pen.ban)) + "</span>" : "") + (muted ? '<span class="tag warn">مكتوم ' + (pen.mute > 9e14 ? "دائم" : "لين " + kw(pen.mute)) + "</span>" : "") + (p.fd ? '<span class="tag gold">مؤسس</span>' : "") + (p.gold ? '<span class="tag gold">الموسم الذهبي</span>' : "") + (r.flags.length ? '<span class="tag bad">مشبوه</span>' : "") + '<span class="id">' + esc(id) + "</span></div>" +
+    '<div class="pcard">' + photo + '<div class="stats">' + st("الجواهر", fmt(p.gems)) + st("الكوينز", fmt(p.coins)) + st("المستوى", p.level) + st("النقاط", fmt(p.rank)) +
+    st("فوز / خسارة", (p.rk ? p.rk.wins + " / " + p.rk.losses : "-")) + st("مباريات / فوز اليوم", p.today.matches + " / " + p.today.wins) + st("صرف حقيقي", usd(p.usd)) + st("النسخة", esc(p.ver || "-")) +
+    st("سجّل", kw(p.created)) + st("آخر دخول", kw(p.seen)) + st("بلاغات عليه", r.about.length) + st("بلّغ على غيره", r.by) + "</div></div>" +
+    '<div class="grid2"><div><h3>العقوبات</h3><div class="panel"><div class="field"><label for="why">السبب (يشوفه اللاعب)</label><input id="why" placeholder="مثال: سب في الشات"></div>' +
+    '<div class="row"><select id="days" style="width:auto"><option value="1">يوم</option><option value="3">٣ أيام</option><option value="7" selected>٧ أيام</option><option value="30">٣٠ يوم</option><option value="0">دائم</option></select>' +
+    '<button class="btn sm" data-k="warn">تحذير</button><button class="btn sm" data-k="mute">كتم</button><button class="btn sm bad" data-k="ban">حظر</button>' +
+    (muted ? '<button class="btn sm" data-k="unmute">فك الكتم</button>' : "") + (banned ? '<button class="btn sm" data-k="unban">فك الحظر</button>' : "") + '</div><div id="cf"></div></div>' +
+    '<h3>هدية أو تعديل رصيد</h3><div class="panel"><div class="row"><input id="gg" type="number" placeholder="جواهر" style="width:110px"><input id="gc" type="number" placeholder="كوينز" style="width:120px"><input id="gn" type="number" placeholder="بطاقات اسم" style="width:110px"></div>' +
+    '<div class="field" style="margin-top:10px"><input id="gt" placeholder="عنوان الرسالة (مثال: تعويض)"></div><div class="row"><button class="btn gold sm" id="gmail">أرسل بالبريد</button><button class="btn sm" id="gdir">عدّل الرصيد مباشرة</button></div>' +
+    '<p class="sub" style="margin:8px 0 0">بالبريد: اللاعب يستلمها بنفسه. مباشرة: تنضاف أو تنقص على طول (للتصحيح).</p></div></div>' +
+    "<div><h3>سجل العقوبات</h3>" + tbl(["الوقت", "العقوبة", "المدة", "السبب"], (pen.h || []).slice().reverse().map(h => "<tr><td class='num'>" + kw(h.t) + "</td><td>" + esc(ACT[h.k] || h.k) + "</td><td>" + (h.k === "ban" || h.k === "mute" ? (h.d ? h.d + " يوم" : "دائم") : "") + "</td><td>" + esc(h.why || "") + (h.by === "auto" ? ' <span class="tag">تلقائي</span>' : "") + "</td></tr>"), "ما عليه عقوبات") +
+    "<h3>البلاغات عليه</h3>" + tbl(["الوقت", "المكان", "الكلام"], r.about.map(x => "<tr class='" + (x.done ? "done" : "") + "'><td class='num'>" + kw(x.t) + "</td><td>" + esc(WHERE[x.where] || x.where) + "</td><td>" + esc(x.text) + "</td></tr>"), "ما عليه بلاغات") +
+    (r.flags.length ? "<h3>ليش مشبوه</h3>" + tbl(["اليوم", "السبب", "كم مرة"], r.flags.map(f => "<tr><td class='num'>" + dayLbl(f.day) + "</td><td>" + esc(f.why) + "</td><td class='num'>" + f.n + "</td></tr>")) : "") +
+    "<h3>آخر المشتريات</h3>" + tbl(["الوقت", "المنتج", ""], (p.tx || []).slice().reverse().map(x => "<tr><td class='num'>" + kw(x.t) + "</td><td>" + esc(PIDS[x.p] || x.p) + "</td><td>" + (x.e === "Production" ? '<span class="tag good">حقيقي</span>' : '<span class="tag">تجريبي</span>') + "</td></tr>"), "ما اشترى شي") + "</div></div>";
+  box.querySelectorAll("[data-k]").forEach(b => b.addEventListener("click", () => {
+    const kind = b.dataset.k, days = Number($("#days").value), why = $("#why").value.trim();
+    const label = ACT[kind] + (kind === "ban" || kind === "mute" ? " " + (days ? days + " يوم" : "دائم") : "");
+    $("#cf").innerHTML = '<div class="confirm">' + esc(label) + " على " + esc(p.name) + '؟ <div class="row" style="margin-top:8px"><button class="btn sm bad solid" id="yes">نعم، نفّذ</button><button class="btn sm" id="no">إلغاء</button></div></div>';
+    $("#no").onclick = () => { $("#cf").innerHTML = ""; };
+    $("#yes").onclick = async () => { try { await call("adm_punish", { id, kind, days, why }); toast("تم: " + label); showPlayer(id); } catch (err) { toast(err.message, true); } };
+  }));
+  const gift = async (direct) => {
+    const a = { id, gems: Number($("#gg").value || 0), coins: Number($("#gc").value || 0), nc: Number($("#gn").value || 0), title: $("#gt").value.trim(), direct };
+    try { const o = await call("adm_give", a); toast(direct ? "تم تعديل الرصيد: جواهر " + fmt(o.gems) + " · كوينز " + fmt(o.coins) : "تم إرسال الهدية لبريده"); showPlayer(id); } catch (err) { toast(err.message, true); }
+  };
+  $("#gmail").onclick = () => gift(false); $("#gdir").onclick = () => gift(true);
+}
+
+// ---- reports / flags
+async function listView(m, what) {
+  let all = false;
+  const draw = async () => {
+    const r = await call("adm_list", { what }), l = r.list.filter(x => all || !x.done);
+    const rows = what === "reports"
+      ? l.map(x => "<tr class='" + (x.done ? "done" : "") + "'><td><input type='checkbox' data-i='" + x.i + "' aria-label='اختيار'></td><td class='num'>" + kw(x.t) + "</td><td>" + esc(WHERE[x.where] || x.where) + "</td><td><a href='#' data-p='" + esc(x.target) + "'>" + esc(x.name || x.target) + "</a></td><td>" + esc(x.text) + "</td><td><a href='#' data-p='" + esc(x.by) + "'>" + esc(x.bn || "لاعب") + "</a></td></tr>")
+      : l.map(x => "<tr class='" + (x.done ? "done" : "") + "'><td><input type='checkbox' data-i='" + x.i + "' aria-label='اختيار'></td><td class='num'>" + kw(x.t) + "</td><td><a href='#' data-p='" + esc(x.id) + "'>" + esc(x.name || x.id) + "</a></td><td>" + esc(x.why) + "</td><td class='num'>" + x.n + "</td></tr>");
+    m.innerHTML = head(what === "reports" ? "البلاغات" : "اللاعبين المشبوهين", what === "reports" ? "إذا بلّغ " + ((OV.cfg.auto && OV.cfg.auto.muteAt) || 5) + " لاعبين مختلفين على شخص خلال يوم، ينكتم يوم تلقائياً" : "السيرفر يرفض النتائج اللي ما تطابق القوانين؛ اللي يتكرر عنده يطلع هني") +
+      '<div class="row" style="margin-bottom:12px"><button class="btn sm gold" id="dn">أغلق المختار</button><button class="btn sm" id="tg">' + (all ? "المفتوحة بس" : "اعرض الكل") + "</button></div>" +
+      tbl(what === "reports" ? ["", "الوقت", "المكان", "عليه", "الكلام", "المبلّغ"] : ["", "الوقت", "اللاعب", "السبب", "كم مرة"], rows, all ? "ما فيه شي" : "ما فيه شي مفتوح، كل شي تمام");
+    m.querySelectorAll("a[data-p]").forEach(a => a.addEventListener("click", (e) => { e.preventDefault(); go("players", a.dataset.p); }));
+    $("#tg").onclick = () => { all = !all; draw(); };
+    $("#dn").onclick = async () => { const ids = [...m.querySelectorAll("input[data-i]:checked")].map(c => Number(c.dataset.i)); if (!ids.length) return toast("اختر شي أول", true); await call("adm_done", { what, ids }); toast("تم"); OV = await call("adm_overview"); pills(); draw(); };
+  };
+  await draw();
+}
+V.reports = (m) => listView(m, "reports");
+V.flags = (m) => listView(m, "flags");
+
+// ---- mail
+V.mail = async (m) => {
+  OV = await call("adm_overview");
+  const active = (OV.cfg.mail || []).filter(x => x.exp > OV.now).reverse();
+  m.innerHTML = head("البريد", "رسالة لكل اللاعبين فيها هدية، مثل تعويض الصيانة أو هدية العيد") +
+    '<div class="grid2"><div class="panel"><div class="field"><label for="mt">العنوان</label><input id="mt" maxlength="60" placeholder="هدية العيد"></div>' +
+    '<div class="field"><label for="mx">الرسالة</label><textarea id="mx" maxlength="600" placeholder="عيدكم مبارك! هذي هدية من فريق الدامة"></textarea></div>' +
+    '<div class="row"><div class="field" style="flex:1"><label for="mg">جواهر</label><input id="mg" type="number" min="0" value="0"></div><div class="field" style="flex:1"><label for="mc">كوينز</label><input id="mc" type="number" min="0" value="0"></div><div class="field" style="flex:1"><label for="mn">بطاقات اسم</label><input id="mn" type="number" min="0" value="0"></div><div class="field" style="flex:1"><label for="md">تبقى (أيام)</label><input id="md" type="number" min="1" max="90" value="7"></div></div>' +
+    '<button class="btn gold" id="ms">أرسل لكل اللاعبين</button><div id="mcf"></div></div><div><h3 style="margin-top:0">البريد الشغال</h3>' +
+    tbl(["العنوان", "الهدية", "ينتهي", ""], active.map(x => "<tr><td>" + esc(x.title) + "</td><td class='num'>" + [x.gems && x.gems + " جوهرة", x.coins && x.coins + " كوينز", x.nc && x.nc + " بطاقة"].filter(Boolean).join(" · ") + "</td><td class='num'>" + kw(x.exp) + "</td><td><button class='btn sm bad' data-d='" + esc(x.id) + "'>احذف</button></td></tr>"), "ما فيه بريد شغال") + "</div></div>";
+  $("#ms").onclick = () => {
+    const a = { title: $("#mt").value.trim(), text: $("#mx").value.trim(), gems: +$("#mg").value, coins: +$("#mc").value, nc: +$("#mn").value, days: +$("#md").value };
+    if (!a.title) return toast("اكتب عنوان", true);
+    $("#mcf").innerHTML = '<div class="confirm">ترسل "' + esc(a.title) + '" لكل اللاعبين؟<div class="row" style="margin-top:8px"><button class="btn sm bad solid" id="yes">نعم، أرسل</button><button class="btn sm" id="no">إلغاء</button></div></div>';
+    $("#no").onclick = () => { $("#mcf").innerHTML = ""; };
+    $("#yes").onclick = async () => { try { await call("adm_mail_send", a); toast("انرسل البريد"); go("mail"); } catch (err) { toast(err.message, true); } };
+  };
+  m.querySelectorAll("[data-d]").forEach(b => b.onclick = async () => { await call("adm_mail_del", { mid: b.dataset.d }); toast("انحذف"); go("mail"); });
+};
+
+// ---- news / maintenance / version
+V.news = async (m) => {
+  OV = await call("adm_overview"); const c = OV.cfg, n = c.news || {}, mt = c.maint || {}, u = c.upd || {};
+  m.innerHTML = head("الإعلان والصيانة", "يوصل للاعبين خلال دقيقة بدون تحديث") +
+    '<div class="grid2"><div><h3 style="margin-top:0">إعلان يطلع أول ما يفتحون اللعبة</h3><div class="panel"><div class="field"><label for="nt">العنوان</label><input id="nt" maxlength="60" value="' + esc(n.title || "") + '"></div>' +
+    '<div class="field"><label for="nx">النص</label><textarea id="nx" maxlength="600">' + esc(n.text || "") + '</textarea></div><div class="field"><label for="nh">يختفي بعد (ساعات، فاضي = ما يختفي)</label><input id="nh" type="number" min="1" value=""></div>' +
+    '<div class="row"><button class="btn gold" id="nsv">انشر</button><button class="btn" id="nrm">شيل الإعلان</button></div>' + (n.text ? '<p class="sub" style="margin:8px 0 0">منشور الحين' + (n.until ? " لين " + kw(n.until) : "") + "</p>" : "") + "</div></div>" +
+    '<div><h3 style="margin-top:0">الصيانة</h3><div class="panel"><div class="row" style="margin-bottom:10px"><span class="tag ' + (mt.on ? "bad" : "good") + '">' + (mt.on ? "الصيانة شغالة" : "اللعبة شغالة") + "</span></div>" +
+    '<div class="field"><label for="mtx">رسالة الصيانة</label><input id="mtx" maxlength="300" value="' + esc(mt.text || "") + '" placeholder="نحدّث السيرفر، نرجع بعد ساعة"></div><div class="field"><label for="mth">ترجع بعد (ساعات، اختياري)</label><input id="mth" type="number" min="0"></div>' +
+    '<div class="field"><label for="mta">حسابات تقدر تدخل وقت الصيانة (رقم كل حساب بسطر)</label><textarea id="mta" dir="ltr" style="min-height:60px">' + esc((mt.allow || []).join("\n")) + "</textarea></div>" +
+    '<div class="row"><button class="btn ' + (mt.on ? "gold" : "bad solid") + '" id="mtg">' + (mt.on ? "أوقف الصيانة" : "شغّل الصيانة") + '</button></div><div id="mcf"></div></div>' +
+    '<h3>إجبار التحديث</h3><div class="panel"><div class="field"><label for="mv">أقل نسخة مسموحة (فاضي = بدون إجبار)</label><input id="mv" dir="ltr" placeholder="0.3.5" value="' + esc(c.minVer || "") + '"></div>' +
+    '<div class="field"><label for="mvt">الرسالة</label><input id="mvt" value="' + esc(u.text || "") + '" placeholder="حدّث اللعبة من TestFlight"></div><div class="field"><label for="mvu">رابط التحديث</label><input id="mvu" dir="ltr" value="' + esc(u.url || "") + '" placeholder="https://testflight.apple.com/join/…"></div>' +
+    '<button class="btn gold" id="mvs">احفظ</button><p class="sub" style="margin:8px 0 0">النسخ اللي قبل الإصدار الجديد ما ترسل رقم نسختها، فتعتبر قديمة.</p></div></div></div>';
+  $("#nsv").onclick = async () => { const h = +$("#nh").value; try { await call("adm_cfg", { news: { title: $("#nt").value.trim(), text: $("#nx").value.trim(), until: h ? Date.now() + h * 3600000 : 0 } }); toast("انشر الإعلان"); go("news"); } catch (e) { toast(e.message, true); } };
+  $("#nrm").onclick = async () => { await call("adm_cfg", { news: null }); toast("انشال الإعلان"); go("news"); };
+  $("#mtg").onclick = () => {
+    const on = !mt.on, h = +$("#mth").value;
+    const a = { maint: { on, text: $("#mtx").value.trim(), until: h ? Date.now() + h * 3600000 : 0, allow: $("#mta").value.split(/\s+/).filter(Boolean) } };
+    if (!on) return call("adm_cfg", a).then(() => { toast("رجعت اللعبة تشتغل"); go("news"); });
+    $("#mcf").innerHTML = '<div class="confirm">تشغيل الصيانة يوقف اللعبة عن كل اللاعبين. أكيد؟<div class="row" style="margin-top:8px"><button class="btn sm bad solid" id="yes">نعم، شغّلها</button><button class="btn sm" id="no">إلغاء</button></div></div>';
+    $("#no").onclick = () => { $("#mcf").innerHTML = ""; };
+    $("#yes").onclick = async () => { await call("adm_cfg", a); toast("الصيانة شغالة"); go("news"); };
+  };
+  $("#mvs").onclick = async () => { try { await call("adm_cfg", { minVer: $("#mv").value.trim(), updText: $("#mvt").value.trim(), updUrl: $("#mvu").value.trim() }); toast("انحفظ"); go("news"); } catch (e) { toast(e.message, true); } };
+};
+
+// ---- store
+V.store = async (m) => {
+  OV = await call("adm_overview"); const pr = OV.cfg.pr || {}, s = OV.cfg.sale || {}, live = s.until > OV.now;
+  m.innerHTML = head("المتجر والعروض", "أسعار الجواهر داخل اللعبة. أسعار الدفع الحقيقي (App Store) تتغير من App Store Connect بس") +
+    '<div class="grid2"><div>' + tbl(["الغرض", "الأصلي", "السعر الحين"], Object.keys(OV.prices).map(k => "<tr><td>" + esc(PRICE_NAMES[k] || k) + "</td><td class='num'>" + OV.prices[k] + "</td><td><input type='number' min='1' data-k='" + k + "' value='" + (pr[k] || OV.prices[k]) + "' style='width:110px'></td></tr>")) +
+    '<div class="row" style="margin-top:10px"><button class="btn gold" id="psv">احفظ الأسعار</button><button class="btn" id="prs">رجّع الأصلي</button></div></div>' +
+    '<div><h3 style="margin-top:0">خصم بوقت</h3><div class="panel">' + (live ? '<p><span class="tag gold">خصم ' + s.pct + "% شغال لين " + kw(s.until) + "</span></p>" : "") +
+    '<div class="row"><div class="field" style="flex:1"><label for="sp">نسبة الخصم %</label><input id="sp" type="number" min="1" max="90" value="' + (live ? s.pct : 20) + '"></div><div class="field" style="flex:1"><label for="sh">المدة (ساعات)</label><input id="sh" type="number" min="1" value="48"></div></div>' +
+    '<div class="field"><label for="st">نص العرض</label><input id="st" maxlength="80" value="' + esc(live ? s.text || "" : "") + '" placeholder="عرض نهاية الأسبوع"></div>' +
+    '<div class="row"><button class="btn gold" id="ssv">شغّل الخصم</button>' + (live ? '<button class="btn bad" id="sst">أوقف الخصم</button>' : "") + '</div><p class="sub" style="margin:8px 0 0">الخصم على كل أسعار الجواهر اللي يمين، ويطلع للاعبين إعلان فيه.</p></div></div></div>';
+  $("#psv").onclick = async () => { const o = {}; m.querySelectorAll("input[data-k]").forEach(i => o[i.dataset.k] = Number(i.value)); await call("adm_cfg", { pr: o }); toast("انحفظت الأسعار"); go("store"); };
+  $("#prs").onclick = async () => { await call("adm_cfg", { pr: {} }); toast("رجعت الأسعار الأصلية"); go("store"); };
+  $("#ssv").onclick = async () => { await call("adm_cfg", { sale: { pct: +$("#sp").value, until: Date.now() + (+$("#sh").value || 48) * 3600000, text: $("#st").value.trim() } }); toast("الخصم شغال"); go("store"); };
+  if ($("#sst")) $("#sst").onclick = async () => { await call("adm_cfg", { sale: null }); toast("وقف الخصم"); go("store"); };
+};
+
+// ---- sales / cup / perf / audit
+V.sales = async (m) => { const r = await call("adm_list", { what: "sales" }); const real = r.list.filter(x => x.env === "Production").reduce((a, x) => a + x.usd, 0);
+  m.innerHTML = head("المبيعات", "آخر ٥٠٠ عملية · الحقيقي " + usd(real) + " قبل حصة Apple") + salesTable(r.list); bindPlayers(m); };
+V.cup = async (m) => {
+  const r = await call("adm_cup"), c = r.cup, ch = r.champion;
+  const ph = !c ? "ما بدت" : c.phase === 0 ? "التسجيل" : c.phase === 1 ? "شغالة · الدور " + c.round : "خلصت";
+  m.innerHTML = head("بطولة الجمعة", "كل جمعة ٩ بالليل بتوقيت الكويت، والتسجيل قبلها بنص ساعة") +
+    '<div class="kpis">' + kpi("البطولة الجاية", kw(r.start), "") + kpi("الحالة", ph, r.off ? "ملغية هالأسبوع" : "") + kpi("المسجلين", c ? c.players.length : 0, "من 16") + kpi("البطل", esc(ch && ch.name || "-"), ch ? "لين " + kw(ch.until) : "") + "</div>" +
+    '<div class="row" style="margin-top:16px"><button class="btn ' + (r.off ? "gold" : "bad") + '" id="co">' + (r.off ? "رجّع البطولة" : "ألغِ بطولة هالأسبوع") + "</button></div>" +
+    (c && c.players.length ? "<h3>اللاعبين</h3>" + tbl(["الاسم", "رقم الحساب"], c.players.map(p => "<tr class='click' data-p='" + esc(p.gid) + "'><td>" + esc(p.name) + "</td><td class='id'>" + esc(p.gid) + "</td></tr>")) : "");
+  bindPlayers(m);
+  $("#co").onclick = async () => { await call("adm_cfg", { cupOff: !r.off }); toast(r.off ? "رجعت البطولة" : "انلغت بطولة هالأسبوع"); go("cup"); };
+};
+V.perf = async (m) => {
+  OV = await call("adm_overview"); const l = OV.perf;
+  const by = {}; l.forEach(x => { const o = by[x.model] || (by[x.model] = { model: x.model, n: 0, fps: 0, slow: 0, gpu: x.gpu, mem: x.mem }); o.n++; o.fps += x.fps; o.slow += x.slow; });
+  const rows = Object.values(by).sort((a, b) => a.fps / a.n - b.fps / b.n).map(o => { const f = o.fps / o.n; return "<tr><td>" + esc(o.model) + "</td><td class='num'><span class='tag " + (f >= 50 ? "good" : f >= 28 ? "warn" : "bad") + "'>" + f.toFixed(1) + "</span></td><td class='num'>" + (o.slow / o.n).toFixed(1) + "%</td><td class='num'>" + o.n + "</td><td>" + esc(o.gpu) + "</td><td class='num'>" + fmt(o.mem) + " MB</td></tr>"; });
+  m.innerHTML = head("أداء الأجهزة", "من أجهزة اللاعبين الحقيقية: ٣٠ ثانية بالساحة، مرة كل جلسة") + tbl(["الجهاز", "FPS", "إطارات بطيئة", "تقارير", "كرت الشاشة", "الذاكرة"], rows, "ما وصلت تقارير للحين (تجي من النسخة الجديدة)");
+};
+V.audit = async (m) => { const r = await call("adm_list", { what: "audit" });
+  m.innerHTML = head("السجل", "كل شي انسوى من لوحة التحكم أو تلقائياً") + tbl(["الوقت", "مين", "العملية", "على", "التفاصيل"], r.list.map(x => "<tr><td class='num'>" + kw(x.t) + "</td><td>" + (x.by === "auto" ? '<span class="tag">تلقائي</span>' : x.by === me ? "أنت" : '<span class="id">' + esc(x.by) + "</span>") + "</td><td>" + esc(ACT[x.act] || x.act) + "</td><td>" + (x.target && x.target !== "all" ? "<a href='#' data-p='" + esc(x.target) + "'>" + '<span class="id">' + esc(x.target) + "</span></a>" : x.target === "all" ? "الكل" : "") + "</td><td>" + esc(x.info) + "</td></tr>"), "ما فيه شي للحين");
+  m.querySelectorAll("a[data-p]").forEach(a => a.addEventListener("click", (e) => { e.preventDefault(); go("players", a.dataset.p); }));
+};
+
+// back with a live session
+(async () => { if (load("st")) { $("#lmsg").textContent = "جاري الدخول…"; try { await refresh(); await enter(); } catch (e) { $("#lmsg").textContent = ""; store("st", null); } } })();
+</script>
+</body>
+</html>
