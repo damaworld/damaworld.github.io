@@ -168,11 +168,12 @@ async function auth(path, body) {
 }
 function authErr(j, st) {
   const d = (j.detail || j.title || "").toLowerCase();
+  if (d.includes("provider is not available")) return "تسجيل الدخول باسم وكلمة سر مو مفعّل بإعدادات Unity";
   if (d.includes("invalid username or password") || st === 401) return "اسم المستخدم أو كلمة السر غلط";
   if (d.includes("exists")) return "اسم المستخدم مأخوذ";
   if (d.includes("password")) return "كلمة السر لازم ٨ حروف على الأقل وفيها حرف كبير وصغير ورقم ورمز";
   if (d.includes("username")) return "اسم المستخدم من ٣ لين ٢٠ حرف إنجليزي أو أرقام أو . - @ _";
-  if (d.includes("not enabled") || d.includes("disabled")) return "تسجيل الدخول باسم وكلمة سر مو مفعّل بإعدادات Unity";
+  if (d.includes("not enabled") || d.includes("disabled") || d.includes("not available")) return "تسجيل الدخول باسم وكلمة سر مو مفعّل بإعدادات Unity";
   return (j.detail || j.title || "تعذر الدخول") + " (" + st + ")";
 }
 async function refresh() {
